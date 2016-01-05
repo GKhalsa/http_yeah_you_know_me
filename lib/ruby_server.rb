@@ -33,11 +33,13 @@ class Server
     puts ["Wrote this response:", headers, output].join("\n")
     puts "\nResponse complete."
 
+
     client.close
 
     def lines
       request_lines
     end
+
 
   end
 end
