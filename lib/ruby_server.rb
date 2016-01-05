@@ -14,7 +14,7 @@ class Server
     while line = client.gets and !line.chomp.empty?
       request_lines << line.chomp
     end
-
+    
     server_count += 1
     puts "Got this request:"
     puts request_lines.inspect
