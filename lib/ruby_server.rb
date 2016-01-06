@@ -16,7 +16,6 @@ class Server
 
     end
 
-
     server_count += 1
     puts "Got this request:"
     puts request_lines.inspect
@@ -40,18 +39,13 @@ class Server
     client.close
     puts "<pre>"
     puts "Verb: #{request_lines[1].split[0]}"
-    puts "Path: #{}"
+    puts "Path: #{request_lines[6].split[-1][21..-1]}"
     puts "Protocol: #{request_lines[1].split[2]}"
-    puts "Host: #{request_lines[2].split[1]}"
-    puts "Port: #{}"
-    puts "Origin: #{request_lines[8].split[1]}"
+    puts "Host: #{request_lines[2].split[1][0..-6]}"
+    puts "Port: #{request_lines[6].split[-1][17..20]}"
+    puts "Origin: #{request_lines[2].split[1][0..-6]}"
     puts "Accept: #{request_lines[5].split[1]}"
-    puts "request: #{request_lines[6].split[-1][22..-1]}"
     puts "</pre>"
-
-
-
-
 
   end
 
