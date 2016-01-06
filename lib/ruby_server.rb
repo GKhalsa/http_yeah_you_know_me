@@ -8,8 +8,11 @@ class Server
   loop do
 
     client = tcp_server.accept
+
+
+    # this is the request_lines array
     puts "Ready for a request"
-    request_lines = ["Hello, World (#{server_count/2})"] #possible
+    request_lines = ["Hello, World (#{server_count})"] #possible
 
     while line = client.gets and !line.chomp.empty?
       request_lines << line.chomp
@@ -21,7 +24,7 @@ class Server
     puts request_lines.inspect
 
     puts "Sending response."
-    response = "<pre>" + request_lines.join("\n") + "</pre>"
+    response = "<pre>" + request_lines.join("\n"/2) + "</pre>"
     output = "<html><head></head><body>#{response}</body></html>"
     headers = ["http/1.1 200 ok",
               "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
@@ -37,12 +40,13 @@ class Server
 
 
     client.close
+
     puts "<pre>"
     puts "Verb: #{request_lines[1].split[0]}"
     puts "Path: #{request_lines[6].split[-1][21..-1]}"
     puts "Protocol: #{request_lines[1].split[2]}"
     puts "Host: #{request_lines[2].split[1][0..-6]}"
-    puts "Port: #{request_lines[6].split[-1][17..20]}"
+    puts "Port: #{request_lines[2].split[1][-4..-1]}"
     puts "Origin: #{request_lines[2].split[1][0..-6]}"
     puts "Accept: #{request_lines[5].split[1]}"
     puts "</pre>"
