@@ -9,11 +9,13 @@ class Server
 
     client = tcp_server.accept
     puts "Ready for a request"
-    request_lines = ["Hello, World (#{server_count/2})"]
+    request_lines = ["Hello, World (#{server_count/2})"] #possible
 
     while line = client.gets and !line.chomp.empty?
       request_lines << line.chomp
+
     end
+
 
     server_count += 1
     puts "Got this request:"
@@ -27,6 +29,7 @@ class Server
               "server: ruby",
               "content-type: text/html; charset=iso-8859-1",
               "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+
     client.puts headers
     client.puts output
 
@@ -35,11 +38,21 @@ class Server
 
 
     client.close
+    puts "<pre>"
+    puts "Verb: #{request_lines[1].split[0]}"
+    puts "Path: #{}"
+    puts "Protocol: #{request_lines[1].split[2]}"
+    puts "Host: #{request_lines[2].split[1]}"
+    puts "Port: #{}"
+    puts "Origin: #{request_lines[8].split[1]}"
+    puts "Accept: #{request_lines[5].split[1]}"
+    puts "request: #{request_lines[6].split[-1][22..-1]}"
+    puts "</pre>"
 
-    def lines
-      request_lines
-    end
+
+
 
 
   end
+
 end
