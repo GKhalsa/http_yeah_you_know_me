@@ -1,11 +1,13 @@
 require 'socket'
 
 class Server
-    attr_reader :request_count
+    attr_reader :request_count,
+                :hello_count
 
   def initialize(port = 9292)
     @server = TCPServer.new(port)
     @request_count = 0
+    @hello_count = 0
     @request_lines = []
   end
 
@@ -20,6 +22,7 @@ class Server
       @request_count += 1
 
       if @request_lines[0].split[1] == "/hello"
+        @hello_count += 1
         client.puts hello
       elsif @request_lines[0].split[1] == "/datetime"
         client.puts time
@@ -31,7 +34,7 @@ class Server
       # client.puts response
       # client.puts headers
       client.puts parsed_debug_info
-      # client.puts request_lines
+      client.puts request_lines
       end
       @request_lines = []
 
@@ -51,7 +54,7 @@ class Server
   #     # client.puts request_lines
   # end
     def hello
-      "Hello, World(#{request_count/2})"
+      "Hello, World(#{hello_count/2})"
     end
 
     def shutdown
@@ -91,7 +94,7 @@ class Server
        Host: #{@request_lines[1].split[1][0..8]}
        Port: #{@request_lines[1].split[1][-4..-1]}
        Origin: #{@request_lines[1].split[1][0..8]}
-       Accept: #{@request_lines[4].split[1]}
+       Accept: #{@request_lines[6].split[1]}
        </pre>"
     end
 
