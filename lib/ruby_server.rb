@@ -1,5 +1,4 @@
 require 'socket'
-
 class Server
     attr_reader :request_count,
                 :hello_count
@@ -29,8 +28,24 @@ class Server
       elsif @request_lines[0].split[1] == "/shutdown"
         client.puts shutdown
         client.close
+      elsif @request_lines[0].split[1][0..12] == "/word_search?"
+        word = @request_lines[0].split[1][13..-1]
+        words = {}
+        File.open("/usr/share/dict/words") do |file|
+          file.each do |word|
+            words[word.strip] = true
+          end
+        end
+
+          if words[word]
+            client.puts "#{word.upcase} is a known word"
+          else
+            client.puts "#{word.upcase} is a not known word"
+        end
+
       else
         client.puts parsed_debug_info
+        client.puts request_lines
       end
 
       @request_lines = []
@@ -68,6 +83,15 @@ class Server
     "server: ruby",
     "content-type: text/html; charset=iso-8859-1",
     "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def word_search
+    words = {}
+    File.open("/usr/share/dict/words") do |file|
+      file.each do |line|
+        words[line.strip] = true
+      end
+    end
   end
 
   def request_lines
