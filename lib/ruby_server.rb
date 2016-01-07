@@ -1,60 +1,55 @@
+require 'pry'
 require 'socket'
 class Server
     attr_reader :request_count,
-                :hello_count
+                :hello_count,
+                :client
 
   def initialize(port = 9292)
     @server = TCPServer.new(port)
     @request_count = 0
     @hello_count = 0
     @request_lines = []
+    @client = nil
   end
 
   def request
     loop do
-      client = @server.accept    # Wait for a client to connect
-
+      @client = @server.accept    # Wait for a client to connect
       while line = client.gets and !line.chomp.empty?
         @request_lines << line.chomp
       end
-
       @request_count += 1
-
-      if @request_lines[0].split[1] == "/hello"
-        @hello_count += 1
-        client.puts hello
-      elsif @request_lines[0].split[1] == "/datetime"
-        client.puts time
-      elsif @request_lines[0].split[1] == "/shutdown"
-        client.puts shutdown
-        client.close
-      elsif @request_lines[0].split[1][0..12] == "/word_search?"
-        word = @request_lines[0].split[1][13..-1]
-        words = {}
-        File.open("/usr/share/dict/words") do |file|
-          file.each do |word|
-            words[word.strip] = true
-          end
-        end
-
-          if words[word]
-            client.puts "#{word.upcase} is a known word"
-          else
-            client.puts "#{word.upcase} is a not known word"
-        end
-
-      else
-        client.puts parsed_debug_info
-        client.puts request_lines
-      end
-
+      path_finder
       @request_lines = []
-
-      client.close
+      @client.close
     end
   end
 
   def path_finder
+    if @request_lines[0].split[1] == "/hello"
+      @hello_count += 1
+      @client.puts hello
+    elsif @request_lines[0].split[1] == "/datetime"
+      @client.puts time
+    elsif @request_lines[0].split[1] == "/shutdown"
+      @client.puts shutdown
+      @client.close
+    elsif @request_lines[0].split[1][0..17] == "/word_search?word="
+      @client.puts word_search(@request_lines[0].split[1][18..-1])
+    else
+      @client.puts parsed_debug_info
+      #@client.puts request_lines
+    end
+  end
+
+  def word_search(word)
+    dictionary = File.read("/usr/share/dict/words").split
+    if dictionary.include?(word)
+      "#{word.upcase} is a known word"
+    else
+      "#{word.upcase} is not a known word"
+    end
   end
 
   def hello
@@ -65,16 +60,8 @@ class Server
     "Total Requests: #{request_count}"
   end
 
-    # def response1
-    #   "<pre>" + @request_lines.join("\n") + "</pre>"
-    # end
-
-    # def output
-    #   "<html><head></head><body>#{path_finder}</body></html>"
-    # end
-
   def time
-    Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')
+    Time.now.strftime("%I:%M%p on %A, %B %e, %Y")
   end
 
   def headers
@@ -85,14 +72,6 @@ class Server
     "content-length: #{output.length}\r\n\r\n"].join("\r\n")
   end
 
-  def word_search
-    words = {}
-    File.open("/usr/share/dict/words") do |file|
-      file.each do |line|
-        words[line.strip] = true
-      end
-    end
-  end
 
   def request_lines
     @request_lines.inspect
@@ -110,6 +89,13 @@ class Server
      </pre>"
   end
 end
+# def response1
+#   "<pre>" + @request_lines.join("\n") + "</pre>"
+# end
+
+# def output
+#   "<html><head></head><body>#{path_finder}</body></html>"
+# end
 
 server = Server.new
 
