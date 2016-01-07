@@ -30,74 +30,61 @@ class Server
         client.puts shutdown
         client.close
       else
-
-      # client.puts response
-      # client.puts headers
-      client.puts parsed_debug_info
-      client.puts request_lines
+        client.puts parsed_debug_info
       end
+
       @request_lines = []
 
       client.close
     end
   end
-    def response
-      response1
-      time
-    end
 
-  # def response
-  #   client.puts "Hello, World (#{@request_count/2})"
-  #     # # # client.puts "Time is #{Time.now}"
-  #     # client.puts headers
-  #     # client.puts output
-  #     # client.puts request_lines
-  # end
-    def hello
-      "Hello, World(#{hello_count/2})"
-    end
+  def path_finder
+  end
 
-    def shutdown
-      "Total Requests: #{request_count/2}"
-    end
+  def hello
+    "Hello, World(#{hello_count})"
+  end
 
-    def response1
-      "<pre>" + @request_lines.join("\n") + "</pre>"
-    end
+  def shutdown
+    "Total Requests: #{request_count}"
+  end
 
-    def output
-      "<html><head></head><body>#{response1}</body></html>"
-    end
+    # def response1
+    #   "<pre>" + @request_lines.join("\n") + "</pre>"
+    # end
 
-    def time
-      Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')
-    end
+    # def output
+    #   "<html><head></head><body>#{path_finder}</body></html>"
+    # end
 
-    def headers
-      ["http/1.1 200 ok",
-      "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
-      "server: ruby",
-      "content-type: text/html; charset=iso-8859-1",
-      "content-length: #{output.length}\r\n\r\n"].join("\r\n")
-    end
+  def time
+    Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')
+  end
 
-    def request_lines
-      @request_lines.inspect
-    end
+  def headers
+    ["http/1.1 200 ok",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
 
-    def parsed_debug_info
+  def request_lines
+    @request_lines.inspect
+  end
 
-       "<pre>
-       Verb: #{@request_lines[0].split[0]}
-       Path: #{@request_lines[0].split[1]}
-       Protocol: #{@request_lines[0].split[2]}
-       Host: #{@request_lines[1].split[1][0..8]}
-       Port: #{@request_lines[1].split[1][-4..-1]}
-       Origin: #{@request_lines[1].split[1][0..8]}
-       Accept: #{@request_lines[6].split[1]}
-       </pre>"
-    end
-
+  def parsed_debug_info
+    "<pre>
+     Verb: #{@request_lines[0].split[0]}
+     Path: #{@request_lines[0].split[1]}
+     Protocol: #{@request_lines[0].split[2]}
+     Host: #{@request_lines[1].split[1][0..8]}
+     Port: #{@request_lines[1].split[1][-4..-1]}
+     Origin: #{@request_lines[1].split[1][0..8]}
+     Accept: #{@request_lines[6].split[1]}
+     </pre>"
+  end
 end
 
 server = Server.new
