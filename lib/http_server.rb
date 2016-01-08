@@ -1,10 +1,11 @@
-require 'pry'
 require 'socket'
+require_relative 'response_messages'
+
 class Server
-    attr_reader :request_count,
-                :hello_count,
-                :client,
-                :port
+  attr_reader :request_count,
+              :hello_count,
+              :client,
+              :port
 
   def initialize(port = 9292)
     @server = TCPServer.new(port)
@@ -29,20 +30,25 @@ class Server
   end
 
   def path_finder
-    if @request_lines[0].split[1] == "/hello"
+    if path == "/hello"
       @hello_count += 1
-      response = hello
-    elsif @request_lines[0].split[1] == "/datetime"
-      response = time
-    elsif @request_lines[0].split[1] == "/shutdown"
+      response = ResponseMessages.hello(hello_count)
+    elsif path == "/datetime"
+      response = ResponseMessages.time
+    elsif path == "/shutdown"
       @client.puts shutdown
       @client.close
-    elsif @request_lines[0].split[1][0..17] == "/word_search?word="
-      @client.puts word_search(@request_lines[0].split[1][18..-1])
+    elsif path[0..17] == "/word_search?word="
+      @client.puts word_search(path[18..-1])
     else
       @client.puts parsed_debug_info
     end
+
     @client.puts response
+  end
+
+  def path
+    @request_lines[0].split[1]
   end
 
   def word_search(word)
@@ -54,16 +60,8 @@ class Server
     end
   end
 
-  def hello
-    "Hello, World(#{hello_count})"
-  end
-
   def shutdown
     "Total Requests: #{request_count}"
-  end
-
-  def time
-    Time.now.strftime("%I:%M%p on %A, %B %e, %Y")
   end
 
   def parsed_debug_info

@@ -18,6 +18,4 @@ class HTTPServerTest < Minitest::Test
     assert_equal "9292", server.port.to_s
   end
 
-
-
 end
