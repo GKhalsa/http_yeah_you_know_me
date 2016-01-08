@@ -17,11 +17,10 @@ class Server
 
   def request
     loop do
-      @client = @server.accept    # Wait for a client to connect
+      @client = @server.accept
       while line = @client.gets and !line.chomp.empty?
         @request_lines << line.chomp
       end
-      @header
       @request_count += 1
       path_finder
       @request_lines = []
