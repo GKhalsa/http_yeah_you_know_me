@@ -3,16 +3,16 @@ require 'socket'
 class Server
     attr_reader :request_count,
                 :hello_count,
-                :game_count
-                :client
+                :client,
+                :port
 
   def initialize(port = 9292)
     @server = TCPServer.new(port)
     @request_count = 0
     @hello_count = 0
-    @game_count = 0
     @request_lines = []
     @client = nil
+    @port = port
   end
 
   def request
@@ -23,7 +23,6 @@ class Server
       end
       @header
       @request_count += 1
-      # headers
       path_finder
       @request_lines = []
       @client.close
@@ -43,7 +42,6 @@ class Server
       @client.puts word_search(@request_lines[0].split[1][18..-1])
     else
       @client.puts parsed_debug_info
-      @client.puts request_lines
     end
     @client.puts response
   end
@@ -69,10 +67,6 @@ class Server
     Time.now.strftime("%I:%M%p on %A, %B %e, %Y")
   end
 
-  def request_lines
-    @request_lines.inspect
-  end
-
   def parsed_debug_info
     "<pre>
     Verb: #{@request_lines[0].split[0]}
@@ -85,7 +79,3 @@ class Server
     </pre>"
   end
 end
-
-server = Server.new
-
-server.request

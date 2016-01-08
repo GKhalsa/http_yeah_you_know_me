@@ -26,6 +26,7 @@ class RubyServerTest < Minitest::Test
   end
 
   def test_server_has_a_body
+    skip
     assert_equal "<html><head></head><body><pre>Hello, World (#{@counter += 1})
     GET / HTTP/1.1
     User-Agent: Hurley v0.2
