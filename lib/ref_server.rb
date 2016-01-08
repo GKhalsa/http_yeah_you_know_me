@@ -16,15 +16,19 @@ class Server
       request_lines << line.chomp
 
     end
+    # ["HTTP/1.1 302 Found",
+          # "Location: http://127.0.0.1:9292/game\r\n\r\n"].join("\r\n")
 
-    server_count += 1
-    puts "Got this request:"
-    puts request_lines.inspect
+    #server_count += 1
+    #puts "Got this request:"
+    #puts request_lines.inspect
 
     puts "Sending response."
     response = "<pre>" + request_lines.join("\n") + "</pre>"
     output = "<html><head></head><body>#{response}</body></html>"
-    headers = ["http/1.1 200 ok",
+    headers = ["HTTP/1.1 200 ok",
+              "Location: http://127.0.0.1:9292/game",
+
               "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
               "server: ruby",
               "content-type: text/html; charset=iso-8859-1",
