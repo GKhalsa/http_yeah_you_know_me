@@ -14,7 +14,7 @@ class RubyServerTest < Minitest::Test
   end
 
   def self.test_order
-  :alpha
+    :alpha
   end
 
   def test_server_can_connect
